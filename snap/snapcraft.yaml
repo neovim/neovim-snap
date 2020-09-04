@@ -27,8 +27,7 @@ parts:
     source: https://github.com/neovim/neovim.git
     override-pull: |
       snapcraftctl pull
-      #branch="$(git tag -l --sort=refname|head -1)"
-      branch="stable"
+      branch="$(git tag -l --sort=refname|head -1)"
       git checkout tags/${branch} -b ${branch}
       major="$(awk '/NVIM_VERSION_MAJOR/{gsub(")","",$2); print $2}' CMakeLists.txt)"
       minor="$(awk '/NVIM_VERSION_MINOR/{gsub(")","",$2); print $2}' CMakeLists.txt)"
