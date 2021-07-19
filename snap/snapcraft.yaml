@@ -65,7 +65,7 @@ parts:
         ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/nvim.desktop
       sed -i 's|^TryExec=nvim|TryExec=/snap/bin/nvim.nvim|' \
         ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/nvim.desktop
-      sed -i 's|^Icon=.*|Icon=${SNAP}/usr/share/pixmaps/nvim.png|' \
+      sed -i 's|^Icon=.*|Icon=${SNAP}/usr/share/icons/hicolor/128x128/apps/nvim.png|' \
         ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/nvim.desktop
     build-packages:
       - ninja-build
