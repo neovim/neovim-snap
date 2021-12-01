@@ -32,14 +32,7 @@ parts:
       major="$(awk '/NVIM_VERSION_MAJOR/{gsub(")","",$2); print $2}' CMakeLists.txt)"
       minor="$(awk '/NVIM_VERSION_MINOR/{gsub(")","",$2); print $2}' CMakeLists.txt)"
       patch="$(awk '/NVIM_VERSION_PATCH/{gsub(")","",$2); print $2}' CMakeLists.txt)"
-      version_prefix="v$major.$minor.$patch"
-      git_described="$(git describe --first-parent 2> /dev/null | perl -lpe 's/v\d.\d.\d-//g')"
-      git_described="${git_described:-$(git describe --first-parent --tags --always)}"
-      if [ "${version_prefix}" != "${git_described}" ]; then
-        VERSION="${version_prefix}-${git_described}-${branch}"
-      else
-        VERSION="${version_prefix}-${branch}"
-      fi
+      VERSION="v$major.$minor.$patch"
       snapcraftctl set-version "${VERSION}"
     plugin: make
     override-build: |
