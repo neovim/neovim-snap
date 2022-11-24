@@ -2,6 +2,13 @@ name: nvim
 base: core22
 adopt-info: nvim
 summary: Vim-fork focused on extensibility and agility.
+architectures:
+  - build-on: s390x
+  - build-on: ppc64el
+  - build-on: arm64
+  - build-on: armhf
+  - build-on: amd64
+  - build-on: i386
 description: |
  Neovim is a project that seeks to aggressively refactor Vim in order to:
 
@@ -16,6 +23,8 @@ confinement: classic
 apps:
   nvim:
     command: usr/bin/nvim
+    command-chain:
+      - bin/nvim-wrapper
     environment:
       HOME: /home/$USER
       VIM: $SNAP/usr/share/nvim
@@ -26,20 +35,20 @@ parts:
   nvim:
     source: https://github.com/neovim/neovim.git
     override-pull: |
-      snapcraftctl pull
+      craftctl default
       branch="$(git tag -l --sort=refname | awk '/v[0-9\.]/{print $0}' | tail -1)"
       git checkout tags/${branch} -b ${branch}
       major="$(awk '/NVIM_VERSION_MAJOR/{gsub(")","",$2); print $2}' CMakeLists.txt)"
       minor="$(awk '/NVIM_VERSION_MINOR/{gsub(")","",$2); print $2}' CMakeLists.txt)"
       patch="$(awk '/NVIM_VERSION_PATCH/{gsub(")","",$2); print $2}' CMakeLists.txt)"
-      VERSION="v$major.$minor.$patch"
-      snapcraftctl set-version "${VERSION}"
+      version="v$major.$minor.$patch"
+      craftctl set version="${version}"
     plugin: make
     override-build: |
       echo "Building on $SNAP_ARCH"
       set -x
       case "$SNAP_ARCH" in
-        "arm64" | "ppc64el"  | "s390x")
+         "ppc64el"  | "s390x")
         make -j"${SNAPCRAFT_PARALLEL_BUILD_COUNT}" \
           CMAKE_BUILD_TYPE=RelWithDebInfo \
           CMAKE_INSTALL_PREFIX=/usr \
@@ -76,3 +85,62 @@ parts:
       - wget
     prime:
       - -usr/share/man
+  nvim-wrapper:
+    plugin: dump
+    after:
+      - nvim
+    source: snap/local/
+    organize:
+      nvim-wrapper: bin/
+  treesitter-parsers:
+    plugin: nil
+    after:
+      - nvim
+    override-build: |
+      mkdir -p ~/.local/share/nvim/site/pack/nvim-treesitter/start
+      git clone https://github.com/nvim-treesitter/nvim-treesitter ~/.local/share/nvim/site/pack/nvim-treesitter/start/nvim-treesitter
+      mkdir -p ~/.local/share/nvim/site/pack/plenary.nvim/start
+      git clone https://github.com/nvim-lua/plenary.nvim ~/.local/share/nvim/site/pack/plenary.nvim/start/plenary.nvim
+      $CRAFT_STAGE/usr/bin/nvim --headless -c "TSInstallSync all" -c "q"
+      parser_dest="$CRAFT_PART_INSTALL/usr/share/nvim/runtime/parser/"
+      mkdir -p "$parser_dest"
+      cp ~/.local/share/nvim/site/pack/nvim-treesitter/start/nvim-treesitter/parser/* "$parser_dest"
+  patchelf:
+    after:
+      - treesitter-parsers
+    plugin: nil
+    build-packages:
+      - patchelf
+      - file
+    override-prime: |
+      # patchelf
+      #
+      # To allow for a classic snap that works across multiple operating system
+      # runtime environments, we need to ensure all shipped binaries consume
+      # libraries from the core or shipped snap.  We accomplish this by
+      # patching RPATH or interpreter into dynamically linked binaries.
+      #
+      # /snap/core22/current/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+      # /snap/core22/current/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1
+      # /snap/core22/current/lib/powerpc64le-linux-gnu/ld64.so.2
+      # /snap/core22/current/lib/s390x-linux-gnu/ld64.so.1
+      interp_prefix=/snap/core22/current/lib/$CRAFT_ARCH_TRIPLET
+      ld_arch=$(echo $CRAFT_TARGET_ARCH | sed -e 's,amd64,x86-64,' -e 's,arm64,aarch64,')
+      for interp in "ld-linux-${ld_arch}.so.?" "ld64.so.?" "/dev/null"; do
+          if [ -e ${interp_prefix}/${interp} ]; then
+              break
+          fi
+      done
+      if [ $interp = /dev/null ]; then
+          echo "Unable to determine name of shared library interpreter."
+          exit 1
+      fi
+      for binary in \
+        $(find . -exec file {} \; | awk -F\: '/ELF.*dynamic/{print$1}'); do
+          patchelf \
+              --force-rpath \
+              --set-rpath /snap/core22/current/usr/lib/$CRAFT_ARCH_TRIPLET:/snap/$CRAFT_PROJECT_NAME/current/lib:/snap/$CRAFT_PROJECT_NAME/current/lib/$SNAPCRAFT_ARCH_TRIPLET:/snap/$CRAFT_PROJECT_NAME/current/usr/lib:/snap/$CRAFT_PROJECT_NAME/current/usr/lib/$SNAPCRAFT_ARCH_TRIPLET \
+              $binary
+          echo "Patching: $binary with $interp_prefix/$interp"
+          patchelf --set-interpreter $interp_prefix/$interp $binary || true
+      done
