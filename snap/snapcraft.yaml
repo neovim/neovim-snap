@@ -1,4 +1,4 @@
-name: nvim-dev
+name: nvim
 base: core22
 adopt-info: nvim
 summary: Vim-fork focused on extensibility and agility.
@@ -21,7 +21,7 @@ grade: stable  # must be 'stable' to release into candidate/stable channels
 confinement: classic
 
 apps:
-  nvim-dev:
+  nvim:
     command: usr/bin/nvim
     command-chain:
       - bin/nvim-wrapper
