@@ -13,3 +13,9 @@ sudo snap install nvim --classic
 ```
 
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/nvim)
+
+## Last Launchpad Sync
+
+<!-- BEGIN SYNC INFO -->
+Last sync to launchpad: Dec 31, 2022
+<!-- END SYNC INFO -->

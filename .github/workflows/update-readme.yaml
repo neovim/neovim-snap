@@ -1,0 +1,23 @@
+---
+name: Update Readme
+on: workflow_dispatch
+
+jobs:
+  update_readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Update last sync date to launchpad
+        env:
+          BEGIN_TAG: "<!-- BEGIN SYNC INFO -->"
+          END_TAG: "<!-- END SYNC INFO -->"
+        run: |
+          TODAY=$(date)
+          UPDATE=$(cat README.md | perl -0777 -pe 's#(${{ env.BEGIN_TAG }})(?:.|\n)*?(${{ env.END_TAG }})#${1}\nLast sync to launchpad:${{ env.TODAY }}\n${2}#g')
+          echo "${UPDATE}" > README.md
+
+      - uses: EndBug/add-and-commit@v9
+        with:
+          message: "docs(readme): Bump sync date"
+          default_author: github_actions
