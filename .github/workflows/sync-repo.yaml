@@ -1,7 +1,15 @@
 ---
 
 name: Sync repo to Launchpad
-on: [ push ]
+on:
+  workflow_call:
+    secrets:
+      GIT_SSH_PRIVATE_KEY:
+        required: true
+      GIT_SSH_KNOWN_HOSTS:
+        required: true
+  push:
+
 
 jobs:
   to_launchpad:
