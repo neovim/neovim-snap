@@ -1,0 +1,23 @@
+---
+
+name: Sync repo to Launchpad
+on:
+  workflow_call:
+    secrets:
+      GIT_SSH_PRIVATE_KEY:
+        required: true
+      GIT_SSH_KNOWN_HOSTS:
+        required: true
+  push:
+
+
+jobs:
+  to_launchpad:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: yesolutions/mirror-action@master
+        with:
+          REMOTE: 'ssh://neovim-snap@git.launchpad.net/neovim-snap'
+          GIT_SSH_PRIVATE_KEY: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
+          GIT_SSH_KNOWN_HOSTS: ${{ secrets.GIT_SSH_KNOWN_HOSTS }}
