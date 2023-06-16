@@ -4,6 +4,8 @@ on: workflow_dispatch
 
 jobs:
   update_readme:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
