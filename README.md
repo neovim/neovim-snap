@@ -6,7 +6,7 @@
 <p align="center"><b>This is the snap for nvim</b>. It works on Ubuntu, Fedora, Debian, and other major Linux
 distributions.</p>
 
-## Install
+## Install (current version : v0.11.0-dev-881+g865ba42e0)
 
 ```sh
 sudo snap install nvim --classic
