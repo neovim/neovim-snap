@@ -32,17 +32,28 @@ apps:
     desktop: usr/share/applications/nvim.desktop
 
 parts:
+  name: publish ${{ matrix.nvimbranch }}
+  strategy:
+    fail-fast: false
+    matrix:
+      nvimbranch: [ stable, nightly ]
   nvim:
     source: https://github.com/neovim/neovim.git
     override-pull: |
       craftctl default
-      branch="stable"
+      branch="${{ matrix.nvimbranch }}"
       git checkout tags/${branch} -b ${branch}
       major="$(awk '/NVIM_VERSION_MAJOR/{gsub(")","",$2); print $2}' CMakeLists.txt)"
       minor="$(awk '/NVIM_VERSION_MINOR/{gsub(")","",$2); print $2}' CMakeLists.txt)"
       patch="$(awk '/NVIM_VERSION_PATCH/{gsub(")","",$2); print $2}' CMakeLists.txt)"
-      version="v$major.$minor.$patch"
-      craftctl set version="${version}"
+      if [ stable = "${{ matrix.nvimbranch }}" ] ; then
+        version="v$major.$minor.$patch"
+        craftctl set version="${version}"
+      else
+        version_prefix="v$major.$minor.$patch"
+        git_described="$(git describe --first-parent 2> /dev/null | perl -lpe 's/v\d.\d.\d-//g' | perl -lpe 's/-/+/g')"
+        craftctl set version="${version_prefix}-${git_described}"
+      fi
     plugin: make
     override-build: |
       echo "Building on $SNAP_ARCH"
