@@ -2,6 +2,7 @@
 
 name: Sync repo to Launchpad
 on:
+  workflow_dispatch:
   workflow_call:
     secrets:
       GIT_SSH_PRIVATE_KEY:
