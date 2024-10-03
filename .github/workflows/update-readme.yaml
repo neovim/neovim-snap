@@ -1,6 +1,10 @@
 ---
-name: Update Readme
-on: workflow_dispatch
+name: Update readme and trigger sync
+on:
+  workflow_dispatch:
+  # Run daily at 11:45 UTC.
+  schedule:
+    - cron: '45 11 * * *'
 
 jobs:
   update_readme:
