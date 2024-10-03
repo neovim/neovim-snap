@@ -6,7 +6,8 @@ on:
     - cron: '45 11 * * *'
 
 jobs:
-  update_readme:
+  # Updates the timestamp in README.md, which triggers a "push" event.
+  bump_timestamp:
     permissions:
       contents: write
     runs-on: ubuntu-latest
