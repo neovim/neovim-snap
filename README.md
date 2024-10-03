@@ -8,7 +8,7 @@ distributions.</p>
 
 ## Install
 
-### Stable release 
+### Stable release (0.10.2)
 
 ```sh
 sudo snap install nvim --classic
