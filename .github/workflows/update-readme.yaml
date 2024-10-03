@@ -1,5 +1,4 @@
----
-name: Update readme and trigger sync
+name: automation
 on:
   workflow_dispatch:
   # Run daily at 11:45 UTC.
@@ -7,7 +6,8 @@ on:
     - cron: '45 11 * * *'
 
 jobs:
-  update_readme:
+  # Updates the timestamp in README.md, which triggers a "push" event.
+  bump_timestamp:
     permissions:
       contents: write
     runs-on: ubuntu-latest

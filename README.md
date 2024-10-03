@@ -8,8 +8,15 @@ distributions.</p>
 
 ## Install
 
+### Stable release 
+
 ```sh
 sudo snap install nvim --classic
+```
+
+### Nightly release 
+```sh
+sudo snap install nvim --edge --classic
 ```
 
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/nvim)
@@ -17,5 +24,5 @@ sudo snap install nvim --classic
 ## Last Launchpad Sync
 
 <!-- BEGIN SYNC INFO -->
-Last sync to launchpad: Thu Oct  3 11:21:00 UTC 2024
+Last sync to launchpad: Thu Oct  3 11:36:45 UTC 2024
 <!-- END SYNC INFO -->
