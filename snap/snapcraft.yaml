@@ -15,7 +15,7 @@ description: |
  Simplify maintenance and encourage contributions Split the work between
  multiple developers Enable the implementation of new/modern user interfaces
  without any modifications to the core source Improve extensibility with a new
- plugin architecture For lots more details, see the wiki!
+ plugin architecture
 
 grade: stable  # must be 'stable' to release into candidate/stable channels
 confinement: classic
