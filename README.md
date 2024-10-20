@@ -23,7 +23,7 @@ sudo snap install nvim --edge --classic
 
 ## How this repo works
 
-1. This repo defines a time-triggered (daily) [GHA workflow](./.github/workflows/update-readme.yaml) on both its `master` and `nightly` branches.
+1. This repo defines time-triggered CI jobs which poke its [master](./.github/workflows/update-readme.yaml) and [nightly](./.github/workflows/update-readme-nightly.yaml) branches.
 2. The workflow pushes a [timestamp commit](https://github.com/neovim/neovim-snap/commit/752cca5b7c2d8371f54825c61d0c8ebfedbf6711)
    to "tickle" the external Snapcraft service.
 3. Snapcraft fetches the `master` or `nightly` branch of this repo and processes `snap/snapcraft.yaml`.

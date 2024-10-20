@@ -1,9 +1,9 @@
 name: automation
 on:
   workflow_dispatch:
-  # Run daily at 11:45 UTC.
+  # Run weekly at 11:45 UTC Wednesday.
   schedule:
-    - cron: '45 11 * * *'
+    - cron: '45 11 * * 3'
 
 jobs:
   # Updates the timestamp in README.md, which triggers a "push" event.
