@@ -1,0 +1,41 @@
+name: automation-nightly
+on:
+  workflow_dispatch:
+  # Run daily at 11:45 UTC.
+  schedule:
+    - cron: '45 11 * * *'
+
+jobs:
+  # Updates the timestamp in README.md, which triggers a "push" event.
+  bump_timestamp:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: nightly
+
+      - name: Set update date variable
+        run: |
+          UPDATE_DATE=$(date)
+          echo "UPDATE_DATE=${UPDATE_DATE}" >> $GITHUB_ENV
+
+      - name: Update last sync date to launchpad
+        env:
+          BEGIN_TAG: "<!-- BEGIN SYNC INFO -->"
+          END_TAG: "<!-- END SYNC INFO -->"
+        run: |
+          UPDATE=$(cat README.md | perl -0777 -pe 's#(${{ env.BEGIN_TAG }})(?:.|\n)*?(${{ env.END_TAG }})#${1}\nLast sync to launchpad: ${{ env.UPDATE_DATE }}\n${2}#g')
+          echo "${UPDATE}" > README.md
+
+      - uses: EndBug/add-and-commit@v9
+        with:
+          message: "bump timestamp"
+          default_author: github_actions
+
+  call-sync-repo:
+    uses: ./.github/workflows/sync-repo.yaml
+    secrets:
+      GIT_SSH_PRIVATE_KEY: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
+      GIT_SSH_KNOWN_HOSTS: ${{ secrets.GIT_SSH_KNOWN_HOSTS }}
