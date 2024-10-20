@@ -32,4 +32,8 @@ jobs:
           message: "bump timestamp"
           default_author: github_actions
 
-
+  call-sync-repo:
+    uses: ./.github/workflows/sync-repo.yaml
+    secrets:
+      GIT_SSH_PRIVATE_KEY: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
+      GIT_SSH_KNOWN_HOSTS: ${{ secrets.GIT_SSH_KNOWN_HOSTS }}
