@@ -1,4 +1,4 @@
-name: automation
+name: automation-nightly
 on:
   workflow_dispatch:
   # Run daily at 11:45 UTC.
@@ -15,8 +15,23 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: nightly
-      - name: update-readme
-        uses: ./.github/actions/timestamp
+
+      - name: Set update date variable
+        run: |
+          UPDATE_DATE=$(date)
+          echo "UPDATE_DATE=${UPDATE_DATE}" >> $GITHUB_ENV
+
+      - name: Update last sync date to launchpad
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BEGIN_TAG: "<!-- BEGIN SYNC INFO -->"
+          END_TAG: "<!-- END SYNC INFO -->"
+        run: |
+          UPDATE=$(cat README.md | perl -0777 -pe 's#(${{ env.BEGIN_TAG }})(?:.|\n)*?(${{ env.END_TAG }})#${1}\nLast sync to launchpad: ${{ env.UPDATE_DATE }}\n${2}#g')
+          echo "${UPDATE}" > README.md
+
+      - uses: EndBug/add-and-commit@v9
+        with:
+          message: "bump timestamp"
+          default_author: github_actions
+
 
