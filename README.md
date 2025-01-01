@@ -35,5 +35,5 @@ sudo snap install nvim --edge --classic
 ## Last Launchpad Sync
 
 <!-- BEGIN SYNC INFO -->
-Last sync to launchpad: Wed Dec 25 11:45:40 UTC 2024
+Last sync to launchpad: Wed Jan  1 11:45:40 UTC 2025
 <!-- END SYNC INFO -->
