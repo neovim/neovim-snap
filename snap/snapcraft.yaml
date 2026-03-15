@@ -93,22 +93,9 @@ parts:
     source: snap/local/
     organize:
       nvim-wrapper: bin/
-  treesitter-parsers:
-    plugin: nil
-    after:
-      - nvim
-    override-build: |
-      mkdir -p ~/.local/share/nvim/site/pack/nvim-treesitter/start
-      git clone https://github.com/nvim-treesitter/nvim-treesitter ~/.local/share/nvim/site/pack/nvim-treesitter/start/nvim-treesitter
-      mkdir -p ~/.local/share/nvim/site/pack/plenary.nvim/start
-      git clone https://github.com/nvim-lua/plenary.nvim ~/.local/share/nvim/site/pack/plenary.nvim/start/plenary.nvim
-      $CRAFT_STAGE/usr/bin/nvim --headless -c "TSInstallSync all" -c "q"
-      parser_dest="$CRAFT_PART_INSTALL/usr/share/nvim/runtime/parser/"
-      mkdir -p "$parser_dest"
-      cp ~/.local/share/nvim/site/pack/nvim-treesitter/start/nvim-treesitter/parser/* "$parser_dest"
   patchelf:
     after:
-      - treesitter-parsers
+      - nvim
     plugin: nil
     build-packages:
       - patchelf
