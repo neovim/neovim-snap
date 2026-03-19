@@ -15,7 +15,7 @@ description: |
  Simplify maintenance and encourage contributions Split the work between
  multiple developers Enable the implementation of new/modern user interfaces
  without any modifications to the core source Improve extensibility with a new
- plugin architecture For lots more details, see the wiki!
+ plugin architecture
 
 grade: stable  # must be 'stable' to release into candidate/stable channels
 confinement: classic
@@ -69,6 +69,9 @@ parts:
         ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/nvim.desktop
       sed -i 's|^Icon=.*|Icon=${SNAP}/usr/share/icons/hicolor/128x128/apps/nvim.png|' \
         ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/nvim.desktop
+      # Fix treesitter parsers install location
+      mv "$CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET/nvim/parser" "$CRAFT_PART_INSTALL/usr/share/nvim/runtime/parser"
+      rmdir --ignore-fail-on-non-empty -p "$CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET/nvim"
     build-packages:
       - ninja-build
       - libtool
